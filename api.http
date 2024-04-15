@@ -1,0 +1,8 @@
+POST http://localhost:5000/events HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Evento Maneiro Demais",
+    "details": "Um evento pra quem ama tecnologia",
+    "maximumAttendees": 200
+}
