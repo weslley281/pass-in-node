@@ -21,21 +21,32 @@ app.post('/events', async (request, reply) => {
     maximumAttendees: z.number().int().positive().nullable(),
   });
 
-  const data = creatEventSchema.parse(request.body);
+  const { title, details, maximumAttendees } = creatEventSchema.parse(
+    request.body
+  );
 
-  const slug = createSlug(data.title);
+  const slug = createSlug(title);
+
+  const eventWithSameSlug = await prisma.event.findUnique({
+    where: {
+      slug,
+    },
+  });
+
+  if (eventWithSameSlug !== null) {
+    throw new Error('Já existe um evento com o mesmo titulo');
+  }
 
   const event = await prisma.event.create({
     data: {
-      title: data.title,
+      title: title,
       slug,
-      details: data.details,
-      maximumAttendees: data.maximumAttendees,
+      details: details,
+      maximumAttendees: maximumAttendees,
     },
   });
 
   return reply.status(201).send({ event });
-  //return { eventId: event.id }
 });
 
 app.listen({ port }).then(() => {
